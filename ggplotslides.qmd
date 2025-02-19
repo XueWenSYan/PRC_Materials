@@ -1,10 +1,13 @@
 ---
 title: "Visualization in R for Stata Users"
 subtitle: "An Invitation to R and ggplot2"
-author: Xuewen Yan
+author: Xuewen Yan (`xuewen.yan@austin.utexas.edu`)
 format:
   revealjs:
+    chalkboard: true
     slide-number: true
+    auto-animate-easing: ease-in-out
+    auto-animate-duration: 0.4
     margin: 0.05
     theme: serif
     css: styles.css
@@ -21,6 +24,8 @@ editor_options:
     -   Powerful (always multiple ways for the same goal)
 
         -   As you go further there will be times when you HAVE to use R (network analysis, text analysis, machine learning etc.)
+   
+    -   Lots of online/GPT help (compared to the Stata graphing blackbox...)
 
 -   RStudio
 
@@ -36,9 +41,7 @@ editor_options:
 
         -   Lots of extensions based on ggplot2 (e.g., network plotting)
 
-    -   Easier than Stata for elegant graphing once you master the basics
-
-        -   Lots of online/GPT help (compared to the Stata graphing blackbox...)
+    -   Easier than Stata for elegant graphing once you master the fundamentals
 
 ## Basics of R: Install and load packages
 
@@ -71,13 +74,19 @@ jh0 <- read.csv("https://raw.githubusercontent.com/XueWenSYan/PRC_Materials/refs
 jh1 <- read_csv("https://raw.githubusercontent.com/XueWenSYan/PRC_Materials/refs/heads/main/jh_workshop.csv")
 
 # haven-label package loading dta; "tibble"
-jh2 <- read_dta('/Users/xy4889/Library/CloudStorage/GoogleDrive-xy364@cornell.edu/My Drive/2025 SP/jh_workshop.dta')
+# jh2 <- read_dta('/Users/xy4889/Library/CloudStorage/GoogleDrive-xy364@cornell.edu/My Drive/2025 SP/jh_workshop.dta')
+jh2 <- read_dta("G:/My Drive/2025 SP/jh_workshop.dta")
 ```
 
 ## Basics of R: Inspect my data
-
 ```{r, eval=TRUE, echo=TRUE}
+    jh2
     # View(jh0) # or click on the dataset in the Environment pane to view the dataset
+```
+
+
+## Basics of R: Inspect my data
+```{r, eval=TRUE, echo=TRUE}
     nrow(jh1)
     names(jh2)
     class(jh0)
@@ -106,6 +115,11 @@ jh2 <- read_dta('/Users/xy4889/Library/CloudStorage/GoogleDrive-xy364@cornell.ed
     jh2 <- as_factor(jh2,only_labelled = T) #this REPLACED the jh2 dataset; you may or may not want to do this
     class(jh2$rhealth)
     length(jh2$rhealth=="Poor")
+```
+
+## Basics of R: Vector & function based language
+```{r, eval=TRUE,echo=TRUE}
+jh2
 ```
 
 ## Basics of R: Vector & function based language
@@ -138,18 +152,26 @@ jh2 <- read_dta('/Users/xy4889/Library/CloudStorage/GoogleDrive-xy364@cornell.ed
 -   Never jump to a regression! Start with descriptives
 -   `ggplot`: Grammar of Graphics
 
-## {auto-animate="true"}
+##  {auto-animate="true"}
+
+### Descriptive patterns
+
 -   Never jump to a regression! Start with descriptives
 -   `ggplot`: Grammar of Graphics
-```r
+
+``` r
 # add data and aesthetics mapping
 ggplot(jh2, aes(x = simx, y = simy)) +
 ```
 
-## {auto-animate=true}
+##  {auto-animate="true"}
+
+### Descriptive patterns
+
 -   Never jump to a regression! Start with descriptives
 -   `ggplot`: Grammar of Graphics
-```r
+
+``` r
 # add data and aesthetics mapping
 ggplot(jh2, aes(x = simx, y = simy)) +
   # add "geometry"
@@ -158,10 +180,14 @@ ggplot(jh2, aes(x = simx, y = simy)) +
               level = .99) +
 ```
 
-## {auto-animate=true}
+##  {auto-animate="true"}
+
+### Descriptive patterns
+
 -   Never jump to a regression! Start with descriptives
 -   `ggplot`: Grammar of Graphics
-```r
+
+``` r
 # add data and aesthetics mapping
 ggplot(jh2, aes(x = simx, y = simy)) +
   # add "geometry"
@@ -171,10 +197,10 @@ ggplot(jh2, aes(x = simx, y = simy)) +
   # control other features
   ggtitle("My first ggplot!") +
   theme_grey(base_size = 20)
-
 ```
 
 ## Descriptive patterns
+
 -   A normal vs weird-looking graph. What's happening here?
 
 ::: {.column width="50%" style="font-size: 80%"}
@@ -430,7 +456,7 @@ ggplot(pred, aes(x = health, y = predicted,
 ::: {.column width="30%" style="font-size: 80%"}
 ```{r}
 #| echo: true
-#| code-line-numbers: "2-7"
+#| code-line-numbers: "2-7,11"
 #| eval: false
 ggplot(pred, aes(x = health, y = predicted, 
                  fill = gender, group = gender)) +
@@ -475,7 +501,8 @@ ggplot(pred, aes(x = health, y = predicted,
 ## Combine plots
 
 -   ::: {style="font-size: 50%"}
-    see [https://patchwork.data-imaginist.com/index.html](https://patchwork.data-imaginist.com/index.html)
+    see <https://patchwork.data-imaginist.com/index.html>
+
     -   `p1 = ggplot(...); p2 = ggplot(...); p3 = ggplot(...)`
     -   `install.packages("patchwork")`
     -   `library(patchwork)`
@@ -580,3 +607,31 @@ ggplot(jh2, aes(x = rhealth, y = marhappy)) +
   theme_bw(base_size = 14)
 ```
 :::
+
+## Best resources for learning R
+
+-   *R for Data Science*
+
+    -   <https://r4ds.had.co.nz/>
+
+    -   By Hadley Wickham, creator of `tidyverse` and `ggplot2`
+
+    -   Both edition1 and 2 are great and freely available online with paste-friendly code chunks
+
+-   Tidyverse website
+
+    -   <https://www.tidyverse.org/packages/>
+
+-   Online `ggplot2` workshop
+
+    -   <https://www.youtube.com/watch?v=h29g21z0a68&t=2s>
+
+-   Revealjs slides like this one
+
+    -   <https://quarto.org/docs/presentations/revealjs/>
+
+-   *R in Action*
+
+    -   Classic; focus on base R
+
+    -   <https://www.manning.com/books/r-in-action>

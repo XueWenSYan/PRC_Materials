@@ -10,7 +10,7 @@
 <link href="ggplotslides_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.5.57">
 
-  <meta name="author" content="Xuewen Yan">
+  <meta name="author" content="Xuewen Yan (xuewen.yan@austin.utexas.edu)">
   <title>Visualization in R for Stata Users</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -100,6 +100,8 @@
   <link href="ggplotslides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="ggplotslides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="ggplotslides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="ggplotslides_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="ggplotslides_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
   <link href="ggplotslides_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
@@ -398,7 +400,7 @@
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-Xuewen Yan 
+Xuewen Yan (<code>xuewen.yan@austin.utexas.edu</code>) 
 </div>
 </div>
 </div>
@@ -414,6 +416,7 @@ Xuewen Yan
 <ul>
 <li>As you go further there will be times when you HAVE to use R (network analysis, text analysis, machine learning etc.)</li>
 </ul></li>
+<li><p>Lots of online/GPT help (compared to the Stata graphing blackbox…)</p></li>
 </ul></li>
 <li><p>RStudio</p>
 <ul>
@@ -427,10 +430,7 @@ Xuewen Yan
 <ul>
 <li>Lots of extensions based on ggplot2 (e.g., network plotting)</li>
 </ul></li>
-<li><p>Easier than Stata for elegant graphing once you master the basics</p>
-<ul>
-<li>Lots of online/GPT help (compared to the Stata graphing blackbox…)</li>
-</ul></li>
+<li><p>Easier than Stata for elegant graphing once you master the fundamentals</p></li>
 </ul></li>
 </ul>
 </section>
@@ -465,80 +465,103 @@ Xuewen Yan
 <span id="cb2-8"><a href=""></a>jh1 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://raw.githubusercontent.com/XueWenSYan/PRC_Materials/refs/heads/main/jh_workshop.csv"</span>)</span>
 <span id="cb2-9"><a href=""></a></span>
 <span id="cb2-10"><a href=""></a><span class="co"># haven-label package loading dta; "tibble"</span></span>
-<span id="cb2-11"><a href=""></a>jh2 <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">'/Users/xy4889/Library/CloudStorage/GoogleDrive-xy364@cornell.edu/My Drive/2025 SP/jh_workshop.dta'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-11"><a href=""></a><span class="co"># jh2 &lt;- read_dta('/Users/xy4889/Library/CloudStorage/GoogleDrive-xy364@cornell.edu/My Drive/2025 SP/jh_workshop.dta')</span></span>
+<span id="cb2-12"><a href=""></a>jh2 <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"G:/My Drive/2025 SP/jh_workshop.dta"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="basics-of-r-inspect-my-data" class="slide level2">
 <h2>Basics of R: Inspect my data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>    <span class="co"># View(jh0) # or click on the dataset in the Environment pane to view the dataset</span></span>
-<span id="cb3-2"><a href=""></a>    <span class="fu">nrow</span>(jh1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>    jh2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 838</code></pre>
+<pre><code># A tibble: 838 × 10
+     cid rhealth    raceth    fem  pfem sprhealth marstrain  simx  simy marhappy
+   &lt;dbl&gt; &lt;dbl+lbl&gt;  &lt;dbl+l&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+ 1   101 3 [Good]   1 [nh-…     1     1         3     -1     18.2  4.84     1   
+ 2   101 3 [Good]   1 [nh-…     1     1         3     -1.75  15.4  1.73     1.75
+ 3   103 4 [Very G… 1 [nh-…     1     1         4     -1     19.7  2.81     1   
+ 4   103 4 [Very G… 1 [nh-…     1     1         4     -1.5   23.2  3.87     1.5 
+ 5   106 5 [Excell… 1 [nh-…     1     1         5     -1.25  23.2  4.60     1.25
+ 6   106 5 [Excell… 1 [nh-…     1     1         5     -1.25  22.0  5.29     1.25
+ 7   114 4 [Very G… 1 [nh-…     0     0         4     -2     21.1  5.90     2   
+ 8   114 4 [Very G… 1 [nh-…     0     0         4     -2     18.1  1.95     2   
+ 9   120 5 [Excell… 1 [nh-…     0     0         4     -1.75  21.4  4.54     1.75
+10   120 4 [Very G… 1 [nh-…     0     0         5     -1.75  20.2  5.31     1.75
+# ℹ 828 more rows</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>    <span class="fu">names</span>(jh2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] "cid"       "rhealth"   "raceth"    "fem"       "pfem"      "sprhealth"
- [7] "marstrain" "simx"      "simy"      "marhappy" </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a>    <span class="fu">class</span>(jh0)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "data.frame"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>    <span class="fu">class</span>(jh1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame" </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>    <span class="fu">class</span>(jh2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "tbl_df"     "tbl"        "data.frame"</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>    <span class="co"># View(jh0) # or click on the dataset in the Environment pane to view the dataset</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="basics-of-r-inspect-my-data-1" class="slide level2">
 <h2>Basics of R: Inspect my data</h2>
-<ul>
-<li>Subsetting and referencing column (variable)/row/elements:</li>
-</ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href=""></a>    <span class="fu">head</span>(jh0<span class="sc">$</span>rhealth,<span class="dv">6</span>) <span class="co"># `$` for a column = var name in Stata; head = first 6 elements</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a>    <span class="fu">nrow</span>(jh1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Good"      "Good"      "Very Good" "Very Good" "Excellent" "Excellent"</code></pre>
+<pre><code>[1] 838</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href=""></a>    jh0[<span class="dv">1</span>,<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>    <span class="fu">names</span>(jh2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Good"</code></pre>
+<pre><code> [1] "cid"       "rhealth"   "raceth"    "fem"       "pfem"      "sprhealth"
+ [7] "marstrain" "simx"      "simy"      "marhappy" </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href=""></a>    jh0<span class="sc">$</span>rhealth[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a>    <span class="fu">class</span>(jh0)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Good"</code></pre>
+<pre><code>[1] "data.frame"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href=""></a>    <span class="fu">class</span>(jh1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame" </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href=""></a>    <span class="fu">class</span>(jh2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "tbl_df"     "tbl"        "data.frame"</code></pre>
 </div>
 </div>
 </section>
 <section id="basics-of-r-inspect-my-data-2" class="slide level2">
 <h2>Basics of R: Inspect my data</h2>
 <ul>
+<li>Subsetting and referencing column (variable)/row/elements:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href=""></a>    <span class="fu">head</span>(jh0<span class="sc">$</span>rhealth,<span class="dv">6</span>) <span class="co"># `$` for a column = var name in Stata; head = first 6 elements</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Good"      "Good"      "Very Good" "Very Good" "Excellent" "Excellent"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href=""></a>    jh0[<span class="dv">1</span>,<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Good"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href=""></a>    jh0<span class="sc">$</span>rhealth[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Good"</code></pre>
+</div>
+</div>
+</section>
+<section id="basics-of-r-inspect-my-data-3" class="slide level2">
+<h2>Basics of R: Inspect my data</h2>
+<ul>
 <li>Data class is important. “Factor” treated differently than in Stata</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href=""></a>    <span class="fu">class</span>(jh0<span class="sc">$</span>rhealth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href=""></a>    <span class="fu">class</span>(jh0<span class="sc">$</span>rhealth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "character"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href=""></a>    <span class="fu">class</span>(jh1<span class="sc">$</span>rhealth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href=""></a>    <span class="fu">class</span>(jh1<span class="sc">$</span>rhealth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "character"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href=""></a>    <span class="fu">class</span>(jh2<span class="sc">$</span>rhealth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href=""></a>    <span class="fu">class</span>(jh2<span class="sc">$</span>rhealth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "haven_labelled" "vctrs_vctr"     "double"        </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href=""></a>    jh2 <span class="ot">&lt;-</span> <span class="fu">as_factor</span>(jh2,<span class="at">only_labelled =</span> T) <span class="co">#this REPLACED the jh2 dataset; you may or may not want to do this</span></span>
-<span id="cb25-2"><a href=""></a>    <span class="fu">class</span>(jh2<span class="sc">$</span>rhealth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href=""></a>    jh2 <span class="ot">&lt;-</span> <span class="fu">as_factor</span>(jh2,<span class="at">only_labelled =</span> T) <span class="co">#this REPLACED the jh2 dataset; you may or may not want to do this</span></span>
+<span id="cb28-2"><a href=""></a>    <span class="fu">class</span>(jh2<span class="sc">$</span>rhealth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "factor"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href=""></a>    <span class="fu">length</span>(jh2<span class="sc">$</span>rhealth<span class="sc">==</span><span class="st">"Poor"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href=""></a>    <span class="fu">length</span>(jh2<span class="sc">$</span>rhealth<span class="sc">==</span><span class="st">"Poor"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 838</code></pre>
 </div>
@@ -546,17 +569,39 @@ Xuewen Yan
 </section>
 <section id="basics-of-r-vector-function-based-language" class="slide level2">
 <h2>Basics of R: Vector &amp; function based language</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href=""></a>jh2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 838 × 10
+     cid rhealth   raceth     fem  pfem sprhealth marstrain  simx  simy marhappy
+   &lt;dbl&gt; &lt;fct&gt;     &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+ 1   101 Good      nh-white     1     1         3     -1     18.2  4.84     1   
+ 2   101 Good      nh-white     1     1         3     -1.75  15.4  1.73     1.75
+ 3   103 Very Good nh-white     1     1         4     -1     19.7  2.81     1   
+ 4   103 Very Good nh-white     1     1         4     -1.5   23.2  3.87     1.5 
+ 5   106 Excellent nh-white     1     1         5     -1.25  23.2  4.60     1.25
+ 6   106 Excellent nh-white     1     1         5     -1.25  22.0  5.29     1.25
+ 7   114 Very Good nh-white     0     0         4     -2     21.1  5.90     2   
+ 8   114 Very Good nh-white     0     0         4     -2     18.1  1.95     2   
+ 9   120 Excellent nh-white     0     0         4     -1.75  21.4  4.54     1.75
+10   120 Very Good nh-white     0     0         5     -1.75  20.2  5.31     1.75
+# ℹ 828 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="basics-of-r-vector-function-based-language-1" class="slide level2">
+<h2>Basics of R: Vector &amp; function based language</h2>
 <ul>
 <li>The <code>c</code> function (combine vector elements)</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href=""></a>    jh_sub <span class="ot">=</span> jh0[,<span class="fu">c</span>(<span class="st">"rhealth"</span>,<span class="st">"marstrain"</span>)]</span>
-<span id="cb29-2"><a href=""></a>    jh_sub2 <span class="ot">=</span> jh0[,<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">7</span>)]</span>
-<span id="cb29-3"><a href=""></a>    <span class="fu">identical</span>(jh_sub, jh_sub2) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href=""></a>    jh_sub <span class="ot">=</span> jh0[,<span class="fu">c</span>(<span class="st">"rhealth"</span>,<span class="st">"marstrain"</span>)]</span>
+<span id="cb34-2"><a href=""></a>    jh_sub2 <span class="ot">=</span> jh0[,<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">7</span>)]</span>
+<span id="cb34-3"><a href=""></a>    <span class="fu">identical</span>(jh_sub, jh_sub2) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href=""></a>    <span class="fu">head</span>(jh_sub <span class="sc">==</span> jh_sub2,<span class="dv">3</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href=""></a>    <span class="fu">head</span>(jh_sub <span class="sc">==</span> jh_sub2,<span class="dv">3</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     rhealth marstrain
 [1,]    TRUE      TRUE
@@ -565,28 +610,28 @@ Xuewen Yan
 </div>
 </div>
 </section>
-<section id="basics-of-r-vector-function-based-language-1" class="slide level2">
+<section id="basics-of-r-vector-function-based-language-2" class="slide level2">
 <h2>Basics of R: Vector &amp; function based language</h2>
 <ul>
 <li>Vectorized computation</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href=""></a>    a <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">5</span>,<span class="dv">7</span>)</span>
-<span id="cb33-2"><a href=""></a>    b <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">8</span>)</span>
-<span id="cb33-3"><a href=""></a>    d <span class="ot">=</span> a <span class="sc">+</span> b; d </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href=""></a>    a <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">5</span>,<span class="dv">7</span>)</span>
+<span id="cb38-2"><a href=""></a>    b <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">8</span>)</span>
+<span id="cb38-3"><a href=""></a>    d <span class="ot">=</span> a <span class="sc">+</span> b; d </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1]  7 11 15</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href=""></a>    c <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">3</span>)</span>
-<span id="cb35-2"><a href=""></a>    d <span class="ot">=</span> a <span class="sc">+</span> c; d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href=""></a>    c <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">3</span>)</span>
+<span id="cb40-2"><a href=""></a>    d <span class="ot">=</span> a <span class="sc">+</span> c; d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1]  6  8 10</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href=""></a>    jh2<span class="sc">$</span>new_var <span class="ot">=</span> jh2<span class="sc">$</span>rhealth <span class="sc">+</span> jh2<span class="sc">$</span>raceth</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href=""></a>    jh2<span class="sc">$</span>new_var <span class="ot">=</span> jh2<span class="sc">$</span>rhealth <span class="sc">+</span> jh2<span class="sc">$</span>raceth</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in Ops.factor(jh2$rhealth, jh2$raceth): '+' not meaningful for factors</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href=""></a>    jh2<span class="sc">$</span>new_var <span class="ot">=</span> jh2<span class="sc">$</span>simx <span class="sc">+</span> jh2<span class="sc">$</span>simy; <span class="fu">head</span>(jh2<span class="sc">$</span>new_var,<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href=""></a>    jh2<span class="sc">$</span>new_var <span class="ot">=</span> jh2<span class="sc">$</span>simx <span class="sc">+</span> jh2<span class="sc">$</span>simy; <span class="fu">head</span>(jh2<span class="sc">$</span>new_var,<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 23.07762 17.12200</code></pre>
 </div>
@@ -601,79 +646,82 @@ Xuewen Yan
 </section>
 <section id="section" class="slide level2" data-auto-animate="true">
 <h2 data-id="quarto-animate-title"></h2>
+<h3 id="descriptive-patterns-1">Descriptive patterns</h3>
 <ul>
 <li>Never jump to a regression! Start with descriptives</li>
 <li><code>ggplot</code>: Grammar of Graphics</li>
 </ul>
-<div class="sourceCode" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb41-1" class="hljs-ln-code"><a href=""></a><span class="co"># add data and aesthetics mapping</span></span>
-<span id="cb41-2" class="hljs-ln-code"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> simx, <span class="at">y =</span> simy)) <span class="sc">+</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb46-1" class="hljs-ln-code"><a href=""></a><span class="co"># add data and aesthetics mapping</span></span>
+<span id="cb46-2" class="hljs-ln-code"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> simx, <span class="at">y =</span> simy)) <span class="sc">+</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="section-1" class="slide level2" data-auto-animate="true">
 <h2 data-id="quarto-animate-title"></h2>
+<h3 id="descriptive-patterns-2">Descriptive patterns</h3>
 <ul>
 <li>Never jump to a regression! Start with descriptives</li>
 <li><code>ggplot</code>: Grammar of Graphics</li>
 </ul>
-<div class="sourceCode" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb42-1" class="hljs-ln-code"><a href=""></a><span class="co"># add data and aesthetics mapping</span></span>
-<span id="cb42-2" class="hljs-ln-code"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> simx, <span class="at">y =</span> simy)) <span class="sc">+</span></span>
-<span id="cb42-3" class="hljs-ln-code"><a href=""></a>  <span class="co"># add "geometry"</span></span>
-<span id="cb42-4" class="hljs-ln-code"><a href=""></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb42-5" class="hljs-ln-code"><a href=""></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>,<span class="at">color =</span> <span class="st">"plum2"</span>, </span>
-<span id="cb42-6" class="hljs-ln-code"><a href=""></a>              <span class="at">level =</span> .<span class="dv">99</span>) <span class="sc">+</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb47-1" class="hljs-ln-code"><a href=""></a><span class="co"># add data and aesthetics mapping</span></span>
+<span id="cb47-2" class="hljs-ln-code"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> simx, <span class="at">y =</span> simy)) <span class="sc">+</span></span>
+<span id="cb47-3" class="hljs-ln-code"><a href=""></a>  <span class="co"># add "geometry"</span></span>
+<span id="cb47-4" class="hljs-ln-code"><a href=""></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb47-5" class="hljs-ln-code"><a href=""></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>,<span class="at">color =</span> <span class="st">"plum2"</span>, </span>
+<span id="cb47-6" class="hljs-ln-code"><a href=""></a>              <span class="at">level =</span> .<span class="dv">99</span>) <span class="sc">+</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="section-2" class="slide level2" data-auto-animate="true">
 <h2 data-id="quarto-animate-title"></h2>
+<h3 id="descriptive-patterns-3">Descriptive patterns</h3>
 <ul>
 <li>Never jump to a regression! Start with descriptives</li>
 <li><code>ggplot</code>: Grammar of Graphics</li>
 </ul>
-<div class="sourceCode" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb43-1" class="hljs-ln-code"><a href=""></a><span class="co"># add data and aesthetics mapping</span></span>
-<span id="cb43-2" class="hljs-ln-code"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> simx, <span class="at">y =</span> simy)) <span class="sc">+</span></span>
-<span id="cb43-3" class="hljs-ln-code"><a href=""></a>  <span class="co"># add "geometry"</span></span>
-<span id="cb43-4" class="hljs-ln-code"><a href=""></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb43-5" class="hljs-ln-code"><a href=""></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>,<span class="at">color =</span> <span class="st">"plum2"</span>, </span>
-<span id="cb43-6" class="hljs-ln-code"><a href=""></a>              <span class="at">level =</span> .<span class="dv">99</span>) <span class="sc">+</span></span>
-<span id="cb43-7" class="hljs-ln-code"><a href=""></a>  <span class="co"># control other features</span></span>
-<span id="cb43-8" class="hljs-ln-code"><a href=""></a>  <span class="fu">ggtitle</span>(<span class="st">"My first ggplot!"</span>) <span class="sc">+</span></span>
-<span id="cb43-9" class="hljs-ln-code"><a href=""></a>  <span class="fu">theme_grey</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb48-1" class="hljs-ln-code"><a href=""></a><span class="co"># add data and aesthetics mapping</span></span>
+<span id="cb48-2" class="hljs-ln-code"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> simx, <span class="at">y =</span> simy)) <span class="sc">+</span></span>
+<span id="cb48-3" class="hljs-ln-code"><a href=""></a>  <span class="co"># add "geometry"</span></span>
+<span id="cb48-4" class="hljs-ln-code"><a href=""></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb48-5" class="hljs-ln-code"><a href=""></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>,<span class="at">color =</span> <span class="st">"plum2"</span>, </span>
+<span id="cb48-6" class="hljs-ln-code"><a href=""></a>              <span class="at">level =</span> .<span class="dv">99</span>) <span class="sc">+</span></span>
+<span id="cb48-7" class="hljs-ln-code"><a href=""></a>  <span class="co"># control other features</span></span>
+<span id="cb48-8" class="hljs-ln-code"><a href=""></a>  <span class="fu">ggtitle</span>(<span class="st">"My first ggplot!"</span>) <span class="sc">+</span></span>
+<span id="cb48-9" class="hljs-ln-code"><a href=""></a>  <span class="fu">theme_grey</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="descriptive-patterns-1" class="slide level2">
+<section id="descriptive-patterns-4" class="slide level2">
 <h2>Descriptive patterns</h2>
 <ul>
 <li>A normal vs weird-looking graph. What’s happening here?</li>
 </ul>
 <div class="column" style="font-size: 80%">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href=""></a><span class="co"># add data and aesthetics mapping</span></span>
-<span id="cb44-2"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> simx, <span class="at">y =</span> simy)) <span class="sc">+</span></span>
-<span id="cb44-3"><a href=""></a>  <span class="co"># add "geometry"</span></span>
-<span id="cb44-4"><a href=""></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb44-5"><a href=""></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>,<span class="at">color =</span> <span class="st">"plum2"</span>, </span>
-<span id="cb44-6"><a href=""></a>              <span class="at">level =</span> .<span class="dv">99</span>) <span class="sc">+</span></span>
-<span id="cb44-7"><a href=""></a>  <span class="co"># control other features</span></span>
-<span id="cb44-8"><a href=""></a>  <span class="fu">ggtitle</span>(<span class="st">"My first ggplot &amp; it looks sensical!"</span>) <span class="sc">+</span></span>
-<span id="cb44-9"><a href=""></a>  <span class="fu">theme_grey</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href=""></a><span class="co"># add data and aesthetics mapping</span></span>
+<span id="cb49-2"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> simx, <span class="at">y =</span> simy)) <span class="sc">+</span></span>
+<span id="cb49-3"><a href=""></a>  <span class="co"># add "geometry"</span></span>
+<span id="cb49-4"><a href=""></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb49-5"><a href=""></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>,<span class="at">color =</span> <span class="st">"plum2"</span>, </span>
+<span id="cb49-6"><a href=""></a>              <span class="at">level =</span> .<span class="dv">99</span>) <span class="sc">+</span></span>
+<span id="cb49-7"><a href=""></a>  <span class="co"># control other features</span></span>
+<span id="cb49-8"><a href=""></a>  <span class="fu">ggtitle</span>(<span class="st">"My first ggplot &amp; it looks sensical!"</span>) <span class="sc">+</span></span>
+<span id="cb49-9"><a href=""></a>  <span class="fu">theme_grey</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
+<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-10-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="font-size: 80%">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(rhealth), </span>
-<span id="cb45-2"><a href=""></a>                <span class="co"># why "as.numeric" here?</span></span>
-<span id="cb45-3"><a href=""></a>                <span class="at">y =</span> marhappy)) <span class="sc">+</span> </span>
-<span id="cb45-4"><a href=""></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb45-5"><a href=""></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span></span>
-<span id="cb45-6"><a href=""></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
-<span id="cb45-7"><a href=""></a>  <span class="fu">ggtitle</span>(<span class="st">"i look weird despite my neat background!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(rhealth), </span>
+<span id="cb50-2"><a href=""></a>                <span class="co"># why "as.numeric" here?</span></span>
+<span id="cb50-3"><a href=""></a>                <span class="at">y =</span> marhappy)) <span class="sc">+</span> </span>
+<span id="cb50-4"><a href=""></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb50-5"><a href=""></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span></span>
+<span id="cb50-6"><a href=""></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb50-7"><a href=""></a>  <span class="fu">ggtitle</span>(<span class="st">"i look weird despite my neat background!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
+<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -686,27 +734,27 @@ Xuewen Yan
 </ul>
 <div class="column" style="font-size: 80%">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46" data-code-line-numbers="2-7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href=""></a> <span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> rhealth, <span class="at">y =</span> marhappy)) <span class="sc">+</span></span>
-<span id="cb46-2"><a href=""></a>   <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, <span class="at">fun =</span> mean, </span>
-<span id="cb46-3"><a href=""></a>            <span class="fu">aes</span>(<span class="at">fill =</span> rhealth)) <span class="sc">+</span>  <span class="co"># Mean as points</span></span>
-<span id="cb46-4"><a href=""></a>   <span class="fu">geom_errorbar</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, </span>
-<span id="cb46-5"><a href=""></a>                 <span class="at">fun.data =</span> mean_cl_normal, </span>
-<span id="cb46-6"><a href=""></a>                 <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span>  <span class="co"># mean+-1.96sd</span></span>
-<span id="cb46-7"><a href=""></a>   <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Self-Rated Health"</span>) <span class="sc">+</span> </span>
-<span id="cb46-8"><a href=""></a>   <span class="fu">ylab</span>(<span class="st">"Marital happiness"</span>) <span class="sc">+</span> </span>
-<span id="cb46-9"><a href=""></a>   <span class="fu">xlab</span>(<span class="cn">NULL</span>) <span class="sc">+</span> </span>
-<span id="cb46-10"><a href=""></a>   <span class="fu">ggtitle</span>(<span class="st">"I look so much better now!"</span>) <span class="sc">+</span></span>
-<span id="cb46-11"><a href=""></a>   <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
-<span id="cb46-12"><a href=""></a>   <span class="fu">theme</span>(<span class="at">plot.title =</span> </span>
-<span id="cb46-13"><a href=""></a>           <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, </span>
-<span id="cb46-14"><a href=""></a>                        <span class="at">face =</span> <span class="st">"bold"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51" data-code-line-numbers="2-7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href=""></a> <span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> rhealth, <span class="at">y =</span> marhappy)) <span class="sc">+</span></span>
+<span id="cb51-2"><a href=""></a>   <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, <span class="at">fun =</span> mean, </span>
+<span id="cb51-3"><a href=""></a>            <span class="fu">aes</span>(<span class="at">fill =</span> rhealth)) <span class="sc">+</span>  <span class="co"># Mean as points</span></span>
+<span id="cb51-4"><a href=""></a>   <span class="fu">geom_errorbar</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, </span>
+<span id="cb51-5"><a href=""></a>                 <span class="at">fun.data =</span> mean_cl_normal, </span>
+<span id="cb51-6"><a href=""></a>                 <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span>  <span class="co"># mean+-1.96sd</span></span>
+<span id="cb51-7"><a href=""></a>   <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Self-Rated Health"</span>) <span class="sc">+</span> </span>
+<span id="cb51-8"><a href=""></a>   <span class="fu">ylab</span>(<span class="st">"Marital happiness"</span>) <span class="sc">+</span> </span>
+<span id="cb51-9"><a href=""></a>   <span class="fu">xlab</span>(<span class="cn">NULL</span>) <span class="sc">+</span> </span>
+<span id="cb51-10"><a href=""></a>   <span class="fu">ggtitle</span>(<span class="st">"I look so much better now!"</span>) <span class="sc">+</span></span>
+<span id="cb51-11"><a href=""></a>   <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb51-12"><a href=""></a>   <span class="fu">theme</span>(<span class="at">plot.title =</span> </span>
+<span id="cb51-13"><a href=""></a>           <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, </span>
+<span id="cb51-14"><a href=""></a>                        <span class="at">face =</span> <span class="st">"bold"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="font-size: 80%">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
+<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -716,35 +764,35 @@ Xuewen Yan
 <h2><code>ggplot</code>: Extremely flexible &amp; lots of online/GPT help</h2>
 <div class="column" style="font-size: 80%">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47" data-code-line-numbers="4,5,6,7,9,11,14,15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> rhealth, <span class="at">y =</span> marhappy)) <span class="sc">+</span></span>
-<span id="cb47-2"><a href=""></a>  <span class="co"># rhealth MUST be a factor already,</span></span>
-<span id="cb47-3"><a href=""></a>  <span class="co"># use "x = factor(rhealth)" otherwise</span></span>
-<span id="cb47-4"><a href=""></a>  <span class="fu">geom_line</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, <span class="at">fun =</span> mean, </span>
-<span id="cb47-5"><a href=""></a>            <span class="at">group =</span> <span class="dv">1</span>, </span>
-<span id="cb47-6"><a href=""></a>            <span class="at">color =</span> <span class="st">"gray20"</span>, <span class="co">#"fill" vs "color"</span></span>
-<span id="cb47-7"><a href=""></a>            <span class="at">linetype =</span> <span class="dv">2</span>,</span>
-<span id="cb47-8"><a href=""></a>            <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb47-9"><a href=""></a>  <span class="fu">geom_errorbar</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, <span class="at">fun.data =</span> mean_se, </span>
-<span id="cb47-10"><a href=""></a>                <span class="at">width =</span> <span class="fl">0.2</span>, </span>
-<span id="cb47-11"><a href=""></a>                <span class="fu">aes</span>(<span class="at">color =</span> rhealth), <span class="co">#why "aes" here?</span></span>
-<span id="cb47-12"><a href=""></a>                <span class="at">size =</span> <span class="fl">0.2</span>,</span>
-<span id="cb47-13"><a href=""></a>                <span class="at">linewidth =</span> <span class="fl">0.7</span>,</span>
-<span id="cb47-14"><a href=""></a>                <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span>  </span>
-<span id="cb47-15"><a href=""></a>  <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Self-Rated Health"</span>) <span class="sc">+</span> </span>
-<span id="cb47-16"><a href=""></a>  <span class="co">#"fill" vs "color"; changes legend title</span></span>
-<span id="cb47-17"><a href=""></a>  <span class="fu">ylab</span>(<span class="st">"Marital happiness"</span>) <span class="sc">+</span> </span>
-<span id="cb47-18"><a href=""></a>  <span class="fu">xlab</span>(<span class="cn">NULL</span>) <span class="sc">+</span> </span>
-<span id="cb47-19"><a href=""></a>  <span class="fu">ggtitle</span>(<span class="st">"What about this with one SE?"</span>) <span class="sc">+</span> </span>
-<span id="cb47-20"><a href=""></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
-<span id="cb47-21"><a href=""></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, </span>
-<span id="cb47-22"><a href=""></a>                                  <span class="at">face =</span> <span class="st">"bold"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52" data-code-line-numbers="4,5,6,7,9,11,14,15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> rhealth, <span class="at">y =</span> marhappy)) <span class="sc">+</span></span>
+<span id="cb52-2"><a href=""></a>  <span class="co"># rhealth MUST be a factor already,</span></span>
+<span id="cb52-3"><a href=""></a>  <span class="co"># use "x = factor(rhealth)" otherwise</span></span>
+<span id="cb52-4"><a href=""></a>  <span class="fu">geom_line</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, <span class="at">fun =</span> mean, </span>
+<span id="cb52-5"><a href=""></a>            <span class="at">group =</span> <span class="dv">1</span>, </span>
+<span id="cb52-6"><a href=""></a>            <span class="at">color =</span> <span class="st">"gray20"</span>, <span class="co">#"fill" vs "color"</span></span>
+<span id="cb52-7"><a href=""></a>            <span class="at">linetype =</span> <span class="dv">2</span>,</span>
+<span id="cb52-8"><a href=""></a>            <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb52-9"><a href=""></a>  <span class="fu">geom_errorbar</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, <span class="at">fun.data =</span> mean_se, </span>
+<span id="cb52-10"><a href=""></a>                <span class="at">width =</span> <span class="fl">0.2</span>, </span>
+<span id="cb52-11"><a href=""></a>                <span class="fu">aes</span>(<span class="at">color =</span> rhealth), <span class="co">#why "aes" here?</span></span>
+<span id="cb52-12"><a href=""></a>                <span class="at">size =</span> <span class="fl">0.2</span>,</span>
+<span id="cb52-13"><a href=""></a>                <span class="at">linewidth =</span> <span class="fl">0.7</span>,</span>
+<span id="cb52-14"><a href=""></a>                <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span>  </span>
+<span id="cb52-15"><a href=""></a>  <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Self-Rated Health"</span>) <span class="sc">+</span> </span>
+<span id="cb52-16"><a href=""></a>  <span class="co">#"fill" vs "color"; changes legend title</span></span>
+<span id="cb52-17"><a href=""></a>  <span class="fu">ylab</span>(<span class="st">"Marital happiness"</span>) <span class="sc">+</span> </span>
+<span id="cb52-18"><a href=""></a>  <span class="fu">xlab</span>(<span class="cn">NULL</span>) <span class="sc">+</span> </span>
+<span id="cb52-19"><a href=""></a>  <span class="fu">ggtitle</span>(<span class="st">"What about this with one SE?"</span>) <span class="sc">+</span> </span>
+<span id="cb52-20"><a href=""></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb52-21"><a href=""></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, </span>
+<span id="cb52-22"><a href=""></a>                                  <span class="at">face =</span> <span class="st">"bold"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="font-size: 80%">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
+<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-15-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -763,23 +811,23 @@ Xuewen Yan
 <li>R code</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href=""></a>jh2<span class="sc">$</span>rhealth_cont <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(jh2<span class="sc">$</span>rhealth)</span>
-<span id="cb48-2"><a href=""></a>model <span class="ot">&lt;-</span> <span class="fu">lmer</span>(marhappy <span class="sc">~</span> rhealth_cont <span class="sc">+</span> sprhealth <span class="sc">*</span> fem <span class="sc">+</span> pfem <span class="sc">+</span> raceth <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> cid), <span class="at">data =</span> jh2, <span class="at">REML =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb48-3"><a href=""></a><span class="co"># must make sure raceth is "factor"; REML option gives complete alignment with Stata default estimation method</span></span>
-<span id="cb48-4"><a href=""></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href=""></a>jh2<span class="sc">$</span>rhealth_cont <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(jh2<span class="sc">$</span>rhealth)</span>
+<span id="cb53-2"><a href=""></a>model <span class="ot">&lt;-</span> <span class="fu">lmer</span>(marhappy <span class="sc">~</span> rhealth_cont <span class="sc">+</span> sprhealth <span class="sc">*</span> fem <span class="sc">+</span> pfem <span class="sc">+</span> raceth <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> cid), <span class="at">data =</span> jh2, <span class="at">REML =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb53-3"><a href=""></a><span class="co"># must make sure raceth is "factor"; REML option gives complete alignment with Stata default estimation method</span></span>
+<span id="cb53-4"><a href=""></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></li>
 </ul>
 </section>
 <section id="creat-predicted-value-dataset-for-plotting" class="slide level2">
 <h2>Creat predicted-value dataset for plotting</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href=""></a><span class="co"># Make sure to INSPECT the data frequently</span></span>
-<span id="cb49-2"><a href=""></a>pred <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(model, <span class="at">terms =</span> <span class="fu">c</span>(<span class="st">"sprhealth"</span>, <span class="st">"fem"</span>))  <span class="co"># "ggpredict" from ggeffects</span></span>
-<span id="cb49-3"><a href=""></a>pred<span class="sc">$</span>gender <span class="ot">&lt;-</span> <span class="fu">factor</span>(pred<span class="sc">$</span>group, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
-<span id="cb49-4"><a href=""></a>                        <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"male"</span>,<span class="st">"female"</span>))</span>
-<span id="cb49-5"><a href=""></a>pred<span class="sc">$</span>health <span class="ot">&lt;-</span> <span class="fu">factor</span>(pred<span class="sc">$</span>x, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>),</span>
-<span id="cb49-6"><a href=""></a>                 <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"poor"</span>,<span class="st">"fair"</span>,<span class="st">"good"</span>,<span class="st">"very good"</span>, <span class="st">"excellent"</span>))</span>
-<span id="cb49-7"><a href=""></a><span class="fu">data.frame</span>(pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href=""></a><span class="co"># Make sure to INSPECT the data frequently</span></span>
+<span id="cb54-2"><a href=""></a>pred <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(model, <span class="at">terms =</span> <span class="fu">c</span>(<span class="st">"sprhealth"</span>, <span class="st">"fem"</span>))  <span class="co"># "ggpredict" from ggeffects</span></span>
+<span id="cb54-3"><a href=""></a>pred<span class="sc">$</span>gender <span class="ot">&lt;-</span> <span class="fu">factor</span>(pred<span class="sc">$</span>group, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb54-4"><a href=""></a>                        <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"male"</span>,<span class="st">"female"</span>))</span>
+<span id="cb54-5"><a href=""></a>pred<span class="sc">$</span>health <span class="ot">&lt;-</span> <span class="fu">factor</span>(pred<span class="sc">$</span>x, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>),</span>
+<span id="cb54-6"><a href=""></a>                 <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"poor"</span>,<span class="st">"fair"</span>,<span class="st">"good"</span>,<span class="st">"very good"</span>, <span class="st">"excellent"</span>))</span>
+<span id="cb54-7"><a href=""></a><span class="fu">data.frame</span>(pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   x predicted  std.error  conf.low conf.high group gender    health
 1  1 0.7178163 0.09679732 0.5278180 0.9078147     0   male      poor
@@ -799,56 +847,21 @@ Xuewen Yan
 <h2>Plotting now</h2>
 <div class="column" style="font-size: 80%">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51" data-code-line-numbers="1-6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href=""></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x =</span> health, <span class="at">y =</span> predicted, </span>
-<span id="cb51-2"><a href=""></a>                 <span class="at">color =</span> gender,<span class="at">group =</span> gender)) <span class="sc">+</span> </span>
-<span id="cb51-3"><a href=""></a>                <span class="co"># what does "group" aes do?</span></span>
-<span id="cb51-4"><a href=""></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
-<span id="cb51-5"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high, </span>
-<span id="cb51-6"><a href=""></a>                  <span class="at">fill =</span> group), <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span> </span>
-<span id="cb51-7"><a href=""></a>  <span class="fu">labs</span>(</span>
-<span id="cb51-8"><a href=""></a>    <span class="at">x =</span> <span class="st">"Self-Reported Health (sprhealth)"</span>,</span>
-<span id="cb51-9"><a href=""></a>    <span class="at">y =</span> <span class="st">"Predicted Marital Happiness"</span>,</span>
-<span id="cb51-10"><a href=""></a>    <span class="at">color =</span> <span class="st">"Gender"</span>, <span class="at">fill =</span> <span class="st">"Gender"</span>,</span>
-<span id="cb51-11"><a href=""></a>    <span class="at">title =</span> <span class="st">"An okay but not so good graph"</span></span>
-<span id="cb51-12"><a href=""></a>  ) <span class="sc">+</span></span>
-<span id="cb51-13"><a href=""></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb51-14"><a href=""></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> </span>
-<span id="cb51-15"><a href=""></a>          <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">16</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div><div class="column" style="font-size: 80%">
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-16-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></section>
-<section id="plotting-improved" class="slide level2">
-<h2>Plotting improved</h2>
-<div class="column" style="font-size: 80%">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb52" data-code-line-numbers="5,7,9,11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href=""></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x =</span> health, <span class="at">y =</span> predicted, </span>
-<span id="cb52-2"><a href=""></a>                 <span class="at">color =</span> gender, <span class="at">group =</span> gender)) <span class="sc">+</span></span>
-<span id="cb52-3"><a href=""></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">0.7</span>) <span class="sc">+</span>  </span>
-<span id="cb52-4"><a href=""></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> conf.low), </span>
-<span id="cb52-5"><a href=""></a>            <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="co">#outside of aes</span></span>
-<span id="cb52-6"><a href=""></a>            <span class="at">size =</span> <span class="fl">0.7</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>,</span>
-<span id="cb52-7"><a href=""></a>            <span class="at">show.legend =</span> F) <span class="sc">+</span>  </span>
-<span id="cb52-8"><a href=""></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> conf.high), </span>
-<span id="cb52-9"><a href=""></a>            <span class="at">linetype =</span> <span class="st">"dashed"</span>,</span>
-<span id="cb52-10"><a href=""></a>            <span class="at">size =</span> <span class="fl">0.7</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>,</span>
-<span id="cb52-11"><a href=""></a>            <span class="at">show.legend =</span> F) <span class="sc">+</span>  </span>
-<span id="cb52-12"><a href=""></a>  <span class="fu">labs</span>(</span>
-<span id="cb52-13"><a href=""></a>    <span class="at">x =</span> <span class="st">"Self-Reported Health (sprhealth)"</span>,</span>
-<span id="cb52-14"><a href=""></a>    <span class="at">y =</span> <span class="st">"Predicted Marital Happiness"</span>,</span>
-<span id="cb52-15"><a href=""></a>    <span class="at">color =</span> <span class="st">"Gender"</span>,</span>
-<span id="cb52-16"><a href=""></a>    <span class="at">title =</span> <span class="st">"A better looking graph"</span></span>
-<span id="cb52-17"><a href=""></a>  ) <span class="sc">+</span></span>
-<span id="cb52-18"><a href=""></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
-<span id="cb52-19"><a href=""></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56" data-code-line-numbers="1-6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href=""></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x =</span> health, <span class="at">y =</span> predicted, </span>
+<span id="cb56-2"><a href=""></a>                 <span class="at">color =</span> gender,<span class="at">group =</span> gender)) <span class="sc">+</span> </span>
+<span id="cb56-3"><a href=""></a>                <span class="co"># what does "group" aes do?</span></span>
+<span id="cb56-4"><a href=""></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb56-5"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high, </span>
+<span id="cb56-6"><a href=""></a>                  <span class="at">fill =</span> group), <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span> </span>
+<span id="cb56-7"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb56-8"><a href=""></a>    <span class="at">x =</span> <span class="st">"Self-Reported Health (sprhealth)"</span>,</span>
+<span id="cb56-9"><a href=""></a>    <span class="at">y =</span> <span class="st">"Predicted Marital Happiness"</span>,</span>
+<span id="cb56-10"><a href=""></a>    <span class="at">color =</span> <span class="st">"Gender"</span>, <span class="at">fill =</span> <span class="st">"Gender"</span>,</span>
+<span id="cb56-11"><a href=""></a>    <span class="at">title =</span> <span class="st">"An okay but not so good graph"</span></span>
+<span id="cb56-12"><a href=""></a>  ) <span class="sc">+</span></span>
+<span id="cb56-13"><a href=""></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb56-14"><a href=""></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> </span>
+<span id="cb56-15"><a href=""></a>          <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">16</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="font-size: 80%">
 <div class="cell">
@@ -861,26 +874,29 @@ Xuewen Yan
 </div>
 </div>
 </div></section>
-<section id="plotting-reshaped" class="slide level2">
-<h2>Plotting reshaped</h2>
+<section id="plotting-improved" class="slide level2">
+<h2>Plotting improved</h2>
 <div class="column" style="font-size: 80%">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53" data-code-line-numbers="2-7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href=""></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x =</span> health, <span class="at">y =</span> predicted, </span>
-<span id="cb53-2"><a href=""></a>                 <span class="at">fill =</span> gender, <span class="at">group =</span> gender)) <span class="sc">+</span></span>
-<span id="cb53-3"><a href=""></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span>  </span>
-<span id="cb53-4"><a href=""></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low,</span>
-<span id="cb53-5"><a href=""></a>                    <span class="at">ymax =</span> conf.high),</span>
-<span id="cb53-6"><a href=""></a>                <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.8</span>), </span>
-<span id="cb53-7"><a href=""></a>                <span class="at">width =</span> <span class="fl">0.2</span> ,<span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
-<span id="cb53-8"><a href=""></a>  <span class="fu">labs</span>(</span>
-<span id="cb53-9"><a href=""></a>    <span class="at">x =</span> <span class="st">"Self-Reported Health (sprhealth)"</span>,</span>
-<span id="cb53-10"><a href=""></a>    <span class="at">y =</span> <span class="st">"Predicted Marital Happiness"</span>,</span>
-<span id="cb53-11"><a href=""></a>    <span class="at">fill =</span> <span class="st">"Gender"</span>,</span>
-<span id="cb53-12"><a href=""></a>    <span class="at">title =</span> <span class="st">"Different but the same"</span></span>
-<span id="cb53-13"><a href=""></a>  ) <span class="sc">+</span></span>
-<span id="cb53-14"><a href=""></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
-<span id="cb53-15"><a href=""></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, </span>
-<span id="cb53-16"><a href=""></a>                                  <span class="at">face =</span> <span class="st">"bold"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57" data-code-line-numbers="5,7,9,11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href=""></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x =</span> health, <span class="at">y =</span> predicted, </span>
+<span id="cb57-2"><a href=""></a>                 <span class="at">color =</span> gender, <span class="at">group =</span> gender)) <span class="sc">+</span></span>
+<span id="cb57-3"><a href=""></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">0.7</span>) <span class="sc">+</span>  </span>
+<span id="cb57-4"><a href=""></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> conf.low), </span>
+<span id="cb57-5"><a href=""></a>            <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="co">#outside of aes</span></span>
+<span id="cb57-6"><a href=""></a>            <span class="at">size =</span> <span class="fl">0.7</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>,</span>
+<span id="cb57-7"><a href=""></a>            <span class="at">show.legend =</span> F) <span class="sc">+</span>  </span>
+<span id="cb57-8"><a href=""></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> conf.high), </span>
+<span id="cb57-9"><a href=""></a>            <span class="at">linetype =</span> <span class="st">"dashed"</span>,</span>
+<span id="cb57-10"><a href=""></a>            <span class="at">size =</span> <span class="fl">0.7</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>,</span>
+<span id="cb57-11"><a href=""></a>            <span class="at">show.legend =</span> F) <span class="sc">+</span>  </span>
+<span id="cb57-12"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb57-13"><a href=""></a>    <span class="at">x =</span> <span class="st">"Self-Reported Health (sprhealth)"</span>,</span>
+<span id="cb57-14"><a href=""></a>    <span class="at">y =</span> <span class="st">"Predicted Marital Happiness"</span>,</span>
+<span id="cb57-15"><a href=""></a>    <span class="at">color =</span> <span class="st">"Gender"</span>,</span>
+<span id="cb57-16"><a href=""></a>    <span class="at">title =</span> <span class="st">"A better looking graph"</span></span>
+<span id="cb57-17"><a href=""></a>  ) <span class="sc">+</span></span>
+<span id="cb57-18"><a href=""></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb57-19"><a href=""></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="font-size: 80%">
 <div class="cell">
@@ -893,11 +909,43 @@ Xuewen Yan
 </div>
 </div>
 </div></section>
+<section id="plotting-reshaped" class="slide level2">
+<h2>Plotting reshaped</h2>
+<div class="column" style="font-size: 80%">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58" data-code-line-numbers="2-7,11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href=""></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x =</span> health, <span class="at">y =</span> predicted, </span>
+<span id="cb58-2"><a href=""></a>                 <span class="at">fill =</span> gender, <span class="at">group =</span> gender)) <span class="sc">+</span></span>
+<span id="cb58-3"><a href=""></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span>  </span>
+<span id="cb58-4"><a href=""></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low,</span>
+<span id="cb58-5"><a href=""></a>                    <span class="at">ymax =</span> conf.high),</span>
+<span id="cb58-6"><a href=""></a>                <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.8</span>), </span>
+<span id="cb58-7"><a href=""></a>                <span class="at">width =</span> <span class="fl">0.2</span> ,<span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb58-8"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb58-9"><a href=""></a>    <span class="at">x =</span> <span class="st">"Self-Reported Health (sprhealth)"</span>,</span>
+<span id="cb58-10"><a href=""></a>    <span class="at">y =</span> <span class="st">"Predicted Marital Happiness"</span>,</span>
+<span id="cb58-11"><a href=""></a>    <span class="at">fill =</span> <span class="st">"Gender"</span>,</span>
+<span id="cb58-12"><a href=""></a>    <span class="at">title =</span> <span class="st">"Different but the same"</span></span>
+<span id="cb58-13"><a href=""></a>  ) <span class="sc">+</span></span>
+<span id="cb58-14"><a href=""></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb58-15"><a href=""></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, </span>
+<span id="cb58-16"><a href=""></a>                                  <span class="at">face =</span> <span class="st">"bold"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="font-size: 80%">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-22-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></section>
 <section id="combine-plots" class="slide level2">
 <h2>Combine plots</h2>
 <ul>
 <li><div style="font-size: 50%">
-see <a href="https://patchwork.data-imaginist.com/index.html">https://patchwork.data-imaginist.com/index.html</a>
+<p>see <a href="https://patchwork.data-imaginist.com/index.html" class="uri">https://patchwork.data-imaginist.com/index.html</a></p>
 <ul>
 <li><code>p1 = ggplot(...); p2 = ggplot(...); p3 = ggplot(...)</code></li>
 <li><code>install.packages("patchwork")</code></li>
@@ -907,37 +955,65 @@ see <a href="https://patchwork.data-imaginist.com/index.html">https://patchwork.
 </div></li>
 </ul>
 
-<img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch"></section>
+<img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch"></section>
 <section id="facet-plots" class="slide level2">
 <h2>Facet plots</h2>
 <div class="column" style="font-size: 80%">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb54" data-code-line-numbers="7,12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> rhealth, <span class="at">y =</span> marhappy)) <span class="sc">+</span></span>
-<span id="cb54-2"><a href=""></a>   <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, <span class="at">fun =</span> mean, </span>
-<span id="cb54-3"><a href=""></a>            <span class="fu">aes</span>(<span class="at">fill =</span> rhealth)) <span class="sc">+</span>  </span>
-<span id="cb54-4"><a href=""></a>   <span class="fu">geom_errorbar</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, </span>
-<span id="cb54-5"><a href=""></a>                 <span class="at">fun.data =</span> mean_cl_boot, </span>
-<span id="cb54-6"><a href=""></a>                 <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span> </span>
-<span id="cb54-7"><a href=""></a>  <span class="fu">facet_wrap</span>( <span class="sc">~</span> raceth) <span class="sc">+</span></span>
-<span id="cb54-8"><a href=""></a>  <span class="fu">labs</span>(</span>
-<span id="cb54-9"><a href=""></a>    <span class="at">x =</span> <span class="st">"Self-rated health"</span>,</span>
-<span id="cb54-10"><a href=""></a>    <span class="at">y =</span> <span class="st">"Mean marital happiness"</span>,</span>
-<span id="cb54-11"><a href=""></a>    <span class="at">title =</span> <span class="st">"Faceted graph"</span>,</span>
-<span id="cb54-12"><a href=""></a>    <span class="at">fill =</span> <span class="st">"Race-ethnicity"</span></span>
-<span id="cb54-13"><a href=""></a>  ) <span class="sc">+</span></span>
-<span id="cb54-14"><a href=""></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59" data-code-line-numbers="7,12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href=""></a><span class="fu">ggplot</span>(jh2, <span class="fu">aes</span>(<span class="at">x =</span> rhealth, <span class="at">y =</span> marhappy)) <span class="sc">+</span></span>
+<span id="cb59-2"><a href=""></a>   <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, <span class="at">fun =</span> mean, </span>
+<span id="cb59-3"><a href=""></a>            <span class="fu">aes</span>(<span class="at">fill =</span> rhealth)) <span class="sc">+</span>  </span>
+<span id="cb59-4"><a href=""></a>   <span class="fu">geom_errorbar</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, </span>
+<span id="cb59-5"><a href=""></a>                 <span class="at">fun.data =</span> mean_cl_boot, </span>
+<span id="cb59-6"><a href=""></a>                 <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span> </span>
+<span id="cb59-7"><a href=""></a>  <span class="fu">facet_wrap</span>( <span class="sc">~</span> raceth) <span class="sc">+</span></span>
+<span id="cb59-8"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb59-9"><a href=""></a>    <span class="at">x =</span> <span class="st">"Self-rated health"</span>,</span>
+<span id="cb59-10"><a href=""></a>    <span class="at">y =</span> <span class="st">"Mean marital happiness"</span>,</span>
+<span id="cb59-11"><a href=""></a>    <span class="at">title =</span> <span class="st">"Faceted graph"</span>,</span>
+<span id="cb59-12"><a href=""></a>    <span class="at">fill =</span> <span class="st">"Race-ethnicity"</span></span>
+<span id="cb59-13"><a href=""></a>  ) <span class="sc">+</span></span>
+<span id="cb59-14"><a href=""></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="font-size: 80%">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-23-1.png" width="960"></p>
+<p><img data-src="ggplotslides_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
-</div><div class="quarto-auto-generated-content">
+</div></section>
+<section id="best-resources-for-learning-r" class="slide level2">
+<h2>Best resources for learning R</h2>
+<ul>
+<li><p><em>R for Data Science</em></p>
+<ul>
+<li><p><a href="https://r4ds.had.co.nz/" class="uri">https://r4ds.had.co.nz/</a></p></li>
+<li><p>By Hadley Wickham, creator of <code>tidyverse</code> and <code>ggplot2</code></p></li>
+<li><p>Both edition1 and 2 are great and freely available online with paste-friendly code chunks</p></li>
+</ul></li>
+<li><p>Tidyverse website</p>
+<ul>
+<li><a href="https://www.tidyverse.org/packages/" class="uri">https://www.tidyverse.org/packages/</a></li>
+</ul></li>
+<li><p>Online <code>ggplot2</code> workshop</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=h29g21z0a68&amp;t=2s" class="uri">https://www.youtube.com/watch?v=h29g21z0a68&amp;t=2s</a></li>
+</ul></li>
+<li><p>Revealjs slides like this one</p>
+<ul>
+<li><a href="https://quarto.org/docs/presentations/revealjs/" class="uri">https://quarto.org/docs/presentations/revealjs/</a></li>
+</ul></li>
+<li><p><em>R in Action</em></p>
+<ul>
+<li><p>Classic; focus on base R</p></li>
+<li><p><a href="https://www.manning.com/books/r-in-action" class="uri">https://www.manning.com/books/r-in-action</a></p></li>
+</ul></li>
+</ul>
+<div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
 </div>
@@ -953,6 +1029,7 @@ see <a href="https://patchwork.data-imaginist.com/index.html">https://patchwork.
   <script src="ggplotslides_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
   <script src="ggplotslides_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
   <script src="ggplotslides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="ggplotslides_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
   <script src="ggplotslides_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
@@ -970,10 +1047,11 @@ see <a href="https://patchwork.data-imaginist.com/index.html">https://patchwork.
 'controlsAuto': true,
 'previewLinksAuto': false,
 'pdfSeparateFragments': false,
-'autoAnimateEasing': "ease",
-'autoAnimateDuration': 1,
+'autoAnimateEasing': "ease-in-out",
+'autoAnimateDuration': 0.4,
 'autoAnimateUnmatched': true,
-'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
 'smaller': false,
  
         // Display controls in the bottom right corner
@@ -1144,7 +1222,7 @@ see <a href="https://patchwork.data-imaginist.com/index.html">https://patchwork.
         },
 
         // reveal.js plugins
-        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
 
           RevealMath,
           RevealNotes,
@@ -1154,42 +1232,80 @@ see <a href="https://patchwork.data-imaginist.com/index.html">https://patchwork.
       });
     </script>
     
+
     <script>
+
       // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+
       // slide changes (different for each slide format).
+
       (function () {
+
         // dispatch for htmlwidgets
+
         function fireSlideEnter() {
+
           const event = window.document.createEvent("Event");
+
           event.initEvent("slideenter", true, true);
+
           window.document.dispatchEvent(event);
+
         }
+
+    
 
         function fireSlideChanged(previousSlide, currentSlide) {
+
           fireSlideEnter();
 
+    
+
           // dispatch for shiny
+
           if (window.jQuery) {
+
             if (previousSlide) {
+
               window.jQuery(previousSlide).trigger("hidden");
+
             }
+
             if (currentSlide) {
+
               window.jQuery(currentSlide).trigger("shown");
+
             }
+
           }
+
         }
+
+    
 
         // hookup for slidy
+
         if (window.w3c_slidy) {
+
           window.w3c_slidy.add_observer(function (slide_num) {
+
             // slide_num starts at position 1
+
             fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+
           });
+
         }
 
+    
+
       })();
+
     </script>
+
+    
 
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
