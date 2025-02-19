@@ -1,7 +1,8 @@
 ---
 title: "Visualization in R for Stata Users"
-subtitle: "An Invitation to R and ggplot2"
-author: Xuewen Yan (`xuewen.yan@austin.utexas.edu`)
+subtitle: "[https://github.com/XueWenSYan/PRC_Materials](https://github.com/XueWenSYan/PRC_Materials)"
+author: Xuewen Yan
+date: 02/19/2025
 format:
   revealjs:
     chalkboard: true
@@ -11,6 +12,7 @@ format:
     margin: 0.05
     theme: serif
     css: styles.css
+    footer: '`xuewen.yan@austin.utexas.edu`'
 editor_options: 
   chunk_output_type: console
 ---
