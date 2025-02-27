@@ -1,0 +1,639 @@
+---
+title: "Visualization in R for Stata Users"
+subtitle: "[https://github.com/XueWenSYan/PRC_Materials](https://github.com/XueWenSYan/PRC_Materials)"
+author: Xuewen Yan
+date: 02/19/2025
+format:
+  revealjs:
+    chalkboard: true
+    slide-number: true
+    auto-animate-easing: ease-in-out
+    auto-animate-duration: 0.4
+    margin: 0.05
+    theme: serif
+    css: styles.css
+    footer: '`xuewen.yan@austin.utexas.edu`'
+editor_options: 
+  chunk_output_type: console
+---
+
+## Why R
+
+-   R
+
+    -   Open source (much larger user base in industry and data science)
+
+    -   Powerful (always multiple ways for the same goal)
+
+        -   As you go further there will be times when you HAVE to use R (network analysis, text analysis, machine learning etc.)
+   
+    -   Lots of online/GPT help (compared to the Stata graphing blackbox...)
+
+-   RStudio
+
+    -   Great companion/interface for R
+
+    -   Great extra tools for making beautiful code-embedded reports (like this revealjs slideshow!)
+
+-   `ggplot2`
+
+    -   Beautiful
+
+    -   Powerful, plot ANYTHING
+
+        -   Lots of extensions based on ggplot2 (e.g., network plotting)
+
+    -   Easier than Stata for elegant graphing once you master the fundamentals
+
+## Basics of R: Install and load packages
+
+```{r comment='#',eval = TRUE, echo=TRUE}
+# Uncomment to install once, load every time!
+# install.packages("ggplot2")
+# install.packages("tidyverse")
+# install.packages("haven") # haven-labeled stata files
+# install.packages("lme4") #runs multilevel models
+# install.packages("lmerTest") #this gives p-values
+# install.packages("ggeffects") # predicted values from regressions
+library(ggplot2)
+library(tidyverse)
+library(haven)
+library(lme4)
+library(lmerTest)
+library(ggeffects)
+```
+
+## Basics of R: Load datasets
+
+```{r, results='hide', echo=TRUE, eval=TRUE}
+# Let's thank Jaime first~
+# Go to https://github.com/XueWenSYan/PRC_Materials/tree/main
+
+# Base R for cvs; "data frame"
+jh0 <- read.csv("https://raw.githubusercontent.com/XueWenSYan/PRC_Materials/refs/heads/main/jh_workshop.csv")
+
+# tidyverse for cvs; "tibble"
+jh1 <- read_csv("https://raw.githubusercontent.com/XueWenSYan/PRC_Materials/refs/heads/main/jh_workshop.csv")
+
+# haven-label package loading dta; "tibble"
+# jh2 <- read_dta('/Users/xy4889/Library/CloudStorage/GoogleDrive-xy364@cornell.edu/My Drive/2025 SP/jh_workshop.dta')
+jh2 <- read_dta("G:/My Drive/2025 SP/jh_workshop.dta")
+```
+
+## Basics of R: Inspect my data
+```{r, eval=TRUE, echo=TRUE}
+    jh2
+    # View(jh0) # or click on the dataset in the Environment pane to view the dataset
+```
+
+
+## Basics of R: Inspect my data
+```{r, eval=TRUE, echo=TRUE}
+    nrow(jh1)
+    names(jh2)
+    class(jh0)
+    class(jh1)
+    class(jh2)
+```
+
+## Basics of R: Inspect my data
+
+-   Subsetting and referencing column (variable)/row/elements:
+
+```{r, eval=TRUE, echo=TRUE}
+    head(jh0$rhealth,6) # `$` for a column = var name in Stata; head = first 6 elements
+    jh0[1,2]
+    jh0$rhealth[1]
+```
+
+## Basics of R: Inspect my data
+
+-   Data class is important. "Factor" treated differently than in Stata
+
+```{r, eval=TRUE, echo=TRUE}
+    class(jh0$rhealth)
+    class(jh1$rhealth)
+    class(jh2$rhealth)
+    jh2 <- as_factor(jh2,only_labelled = T) #this REPLACED the jh2 dataset; you may or may not want to do this
+    class(jh2$rhealth)
+    length(jh2$rhealth=="Poor")
+```
+
+## Basics of R: Vector & function based language
+```{r, eval=TRUE,echo=TRUE}
+jh2
+```
+
+## Basics of R: Vector & function based language
+
+-   The `c` function (combine vector elements)
+
+```{r, eval=TRUE, echo=TRUE}
+    jh_sub = jh0[,c("rhealth","marstrain")]
+    jh_sub2 = jh0[,c(2,7)]
+    identical(jh_sub, jh_sub2) 
+    head(jh_sub == jh_sub2,3) 
+```
+
+## Basics of R: Vector & function based language
+
+-   Vectorized computation
+
+```{r, eval=TRUE, echo=TRUE, warning=TRUE}
+    a = c(3,5,7)
+    b = c(4,6,8)
+    d = a + b; d 
+    c = c(3)
+    d = a + c; d
+    jh2$new_var = jh2$rhealth + jh2$raceth
+    jh2$new_var = jh2$simx + jh2$simy; head(jh2$new_var,2)
+```
+
+## Descriptive patterns
+
+-   Never jump to a regression! Start with descriptives
+-   `ggplot`: Grammar of Graphics
+
+##  {auto-animate="true"}
+
+### Descriptive patterns
+
+-   Never jump to a regression! Start with descriptives
+-   `ggplot`: Grammar of Graphics
+
+``` r
+# add data and aesthetics mapping
+ggplot(jh2, aes(x = simx, y = simy)) +
+```
+
+##  {auto-animate="true"}
+
+### Descriptive patterns
+
+-   Never jump to a regression! Start with descriptives
+-   `ggplot`: Grammar of Graphics
+
+``` r
+# add data and aesthetics mapping
+ggplot(jh2, aes(x = simx, y = simy)) +
+  # add "geometry"
+  geom_point() +
+  geom_smooth(method = "lm",color = "plum2", 
+              level = .99) +
+```
+
+##  {auto-animate="true"}
+
+### Descriptive patterns
+
+-   Never jump to a regression! Start with descriptives
+-   `ggplot`: Grammar of Graphics
+
+``` r
+# add data and aesthetics mapping
+ggplot(jh2, aes(x = simx, y = simy)) +
+  # add "geometry"
+  geom_point() +
+  geom_smooth(method = "lm",color = "plum2", 
+              level = .99) +
+  # control other features
+  ggtitle("My first ggplot!") +
+  theme_grey(base_size = 20)
+```
+
+## Descriptive patterns
+
+-   A normal vs weird-looking graph. What's happening here?
+
+::: {.column width="50%" style="font-size: 80%"}
+```{r, eval=TRUE,echo=TRUE}
+# add data and aesthetics mapping
+ggplot(jh2, aes(x = simx, y = simy)) +
+  # add "geometry"
+  geom_point() +
+  geom_smooth(method = "lm",color = "plum2", 
+              level = .99) +
+  # control other features
+  ggtitle("My first ggplot & it looks sensical!") +
+  theme_grey(base_size = 20)
+```
+:::
+
+::: {.column width="50%" style="font-size: 80%"}
+```{r, eval=TRUE, echo=TRUE}
+ggplot(jh2, aes(x = as.numeric(rhealth), 
+                # why "as.numeric" here?
+                y = marhappy)) + 
+  geom_point() + 
+  geom_smooth(method = "lm") +
+  theme_bw(base_size = 20) +
+  ggtitle("i look weird despite my neat background!")
+```
+:::
+
+## What we need: Mean over groups!
+
+-   We could do `cibar marhappy,over1(rhealth)` in Stata for this, but...
+
+::: {.column width="70%" style="font-size: 80%"}
+```{r}
+#| echo: true
+#| code-line-numbers: "2-7"
+#| eval: false
+ ggplot(jh2, aes(x = rhealth, y = marhappy)) +
+   geom_bar(stat = "summary", fun = mean, 
+            aes(fill = rhealth)) +  # Mean as points
+   geom_errorbar(stat = "summary", 
+                 fun.data = mean_cl_normal, 
+                 width = 0.2) +  # mean+-1.96sd
+   labs(fill = "Self-Rated Health") + 
+   ylab("Marital happiness") + 
+   xlab(NULL) + 
+   ggtitle("I look so much better now!") +
+   theme_bw(base_size = 14) +
+   theme(plot.title = 
+           element_text(size = 20, 
+                        face = "bold")) 
+```
+:::
+
+::: {.column width="30%" style="font-size: 80%"}
+```{r, echo=FALSE, eval=TRUE}
+     ggplot(jh2, aes(x = rhealth, y = marhappy)) +
+       geom_bar(stat = "summary", fun = mean, aes(fill = rhealth)) +  # Mean as points
+       geom_errorbar(stat = "summary", fun.data = mean_cl_normal, width = 0.2) +  # mean+-1.96sd
+       labs(fill = "Self-Rated Health") + 
+       ylab("Marital happiness") + 
+       xlab(NULL) + 
+       ggtitle("I look so much better now!") +
+       theme_bw() +
+       theme(plot.title = element_text(size = 16, 
+                                       face = "bold")) 
+```
+:::
+
+## `ggplot`: Extremely flexible & lots of online/GPT help
+
+::: {.column width="70%" style="font-size: 80%"}
+```{r}
+#| echo: true
+#| code-line-numbers: "4,5,6,7,9,11,14,15"
+#| eval: false
+ggplot(jh2, aes(x = rhealth, y = marhappy)) +
+  # rhealth MUST be a factor already,
+  # use "x = factor(rhealth)" otherwise
+  geom_line(stat = "summary", fun = mean, 
+            group = 1, 
+            color = "gray20", #"fill" vs "color"
+            linetype = 2,
+            linewidth = 1) +
+  geom_errorbar(stat = "summary", fun.data = mean_se, 
+                width = 0.2, 
+                aes(color = rhealth), #why "aes" here?
+                size = 0.2,
+                linewidth = 0.7,
+                alpha = 0.7) +  
+  labs(color = "Self-Rated Health") + 
+  #"fill" vs "color"; changes legend title
+  ylab("Marital happiness") + 
+  xlab(NULL) + 
+  ggtitle("What about this with one SE?") + 
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(size = 20, 
+                                  face = "bold"))
+```
+:::
+
+::: {.column width="30%" style="font-size: 80%"}
+```{r, echo=FALSE, eval=TRUE}
+    ggplot(jh2, aes(x = rhealth, y = marhappy)) +
+      geom_line(stat = "summary", fun = mean, group = 1, 
+                color = "gray20",linetype = 2,linewidth = 1) +
+      geom_errorbar(stat = "summary", fun.data = mean_se, width = 0.2, 
+                    aes(color = rhealth), #why "aes" here?
+                    size = 0.2,linewidth = 0.7,alpha = 0.7) +  
+      labs(color = "Self-Rated Health") + #notice "fill" to "color"
+      ylab("Marital happiness") + 
+      xlab(NULL) + 
+      ggtitle("What about this with one SE?") + 
+      theme_minimal(base_size = 14) +
+      theme(plot.title = element_text(size = 20, face = "bold"))
+```
+:::
+
+## Regressions are no different: A super difficult(-looking) example
+
+-   Import the cleaned data to R and run the regression; Compare with Stata results (method 1)
+
+-   Run the regression in Stata, run "margin" commands and manually paste "table" results saved as cvs (method 2)
+
+    -   Jaime's Stata code:
+        -   `mixed marhappy c.rhealth##i.fem c.sprhealth i.pfem i.raceth  ||cid:`
+    -   R code
+
+    ```{r run the model, echo=TRUE, eval=FALSE}
+    jh2$rhealth_cont <- as.numeric(jh2$rhealth)
+    model <- lmer(marhappy ~ rhealth_cont + sprhealth * fem + pfem + raceth + (1 | cid), data = jh2, REML = FALSE)
+    # must make sure raceth is "factor"; REML option gives complete alignment with Stata default estimation method
+    summary(model)
+    ```
+
+```{r, echo=FALSE, eval=TRUE}
+jh2$rhealth_cont <- as.numeric(jh2$rhealth)
+model <- lmer(marhappy ~ rhealth_cont + sprhealth * fem + pfem + raceth + (1 | cid), data = jh2, REML = FALSE)
+```
+
+## Creat predicted-value dataset for plotting
+
+```{r create predicted values, echo=TRUE,eval=TRUE}
+# Make sure to INSPECT the data frequently
+pred <- ggpredict(model, terms = c("sprhealth", "fem"))  # "ggpredict" from ggeffects
+pred$gender <- factor(pred$group, levels = c(0,1),
+                        labels = c("male","female"))
+pred$health <- factor(pred$x, levels = c(1,2,3,4,5),
+                 labels = c("poor","fair","good","very good", "excellent"))
+data.frame(pred)
+```
+
+## Plotting now
+
+::: {.column width="70%" style="font-size: 80%"}
+```{r, echo=TRUE,eval=FALSE}
+#| echo: true
+#| code-line-numbers: "1-6"
+#| eval: false
+ggplot(pred, aes(x = health, y = predicted, 
+                 color = gender,group = gender)) + 
+                # what does "group" aes do?
+  geom_line() + 
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, 
+                  fill = group), alpha = 0.2) + 
+  labs(
+    x = "Self-Reported Health (sprhealth)",
+    y = "Predicted Marital Happiness",
+    color = "Gender", fill = "Gender",
+    title = "An okay but not so good graph"
+  ) +
+  theme_bw() +
+  theme(plot.title = 
+          element_text(size = 16, face = "bold"))
+```
+:::
+
+::: {.column width="30%" style="font-size: 80%"}
+```{r, echo=FALSE,eval=TRUE}
+ggplot(pred, aes(x = health, y = predicted, color = gender, group = gender)) +
+  # what does "group" aes do?
+  geom_line() +  
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2) +  # Confidence bands
+  labs(
+    x = "Self-Reported Health (sprhealth)",
+    y = "Predicted Marital Happiness",
+    color = "Gender", fill = "Gender",
+    title = "An okay but not so good-looking graph"
+  ) +
+  theme_bw(base_size = 14) +
+  theme(plot.title = element_text(size = 20, 
+                                  face = "bold"))
+```
+:::
+
+## Plotting improved
+
+::: {.column width="70%" style="font-size: 80%"}
+```{r}
+#| echo: true
+#| code-line-numbers: "5,7,9,11"
+#| eval: false
+ggplot(pred, aes(x = health, y = predicted, 
+                 color = gender, group = gender)) +
+  geom_line(size = 0.7) +  
+  geom_line(aes(y = conf.low), 
+            linetype = "dashed", #outside of aes
+            size = 0.7, alpha = 0.7,
+            show.legend = F) +  
+  geom_line(aes(y = conf.high), 
+            linetype = "dashed",
+            size = 0.7, alpha = 0.7,
+            show.legend = F) +  
+  labs(
+    x = "Self-Reported Health (sprhealth)",
+    y = "Predicted Marital Happiness",
+    color = "Gender",
+    title = "A better looking graph"
+  ) +
+  theme_bw(base_size = 14) +
+  theme(plot.title = element_text(size = 20, face = "bold"))
+
+```
+:::
+
+::: {.column width="30%" style="font-size: 80%"}
+```{r, echo=FALSE, eval=TRUE}
+ggplot(pred, aes(x = health, y = predicted, 
+                 color = gender, group = gender)) +
+  geom_line(size = 0.7) +  
+  geom_line(aes(y = conf.low), 
+            linetype = "dashed", #outside of aes
+            size = 0.7, alpha = 0.7,
+            show.legend = F) +  
+  geom_line(aes(y = conf.high), 
+            linetype = "dashed",
+            size = 0.7, alpha = 0.7,
+            show.legend = F) +  
+  labs(
+    x = "Self-Reported Health (sprhealth)",
+    y = "Predicted Marital Happiness",
+    color = "Gender",
+    title = "A better looking graph"
+  ) +
+  theme_bw(base_size = 14) +
+  theme(plot.title = element_text(size = 20, face = "bold"))
+
+```
+:::
+
+## Plotting reshaped
+
+::: {.column width="30%" style="font-size: 80%"}
+```{r}
+#| echo: true
+#| code-line-numbers: "2-7,11"
+#| eval: false
+ggplot(pred, aes(x = health, y = predicted, 
+                 fill = gender, group = gender)) +
+  geom_col(position = "dodge") +  
+  geom_errorbar(aes(ymin = conf.low,
+                    ymax = conf.high),
+                position = position_dodge(width = 0.8), 
+                width = 0.2 ,size = 0.5) + 
+  labs(
+    x = "Self-Reported Health (sprhealth)",
+    y = "Predicted Marital Happiness",
+    fill = "Gender",
+    title = "Different but the same"
+  ) +
+  theme_bw(base_size = 14) +
+  theme(plot.title = element_text(size = 20, 
+                                  face = "bold"))
+```
+:::
+
+::: {.column width="30%" style="font-size: 80%"}
+```{r, echo=FALSE, eval=TRUE}
+ggplot(pred, aes(x = health, y = predicted, 
+                 fill = gender, group = gender)) +
+  geom_col(position = "dodge") +  
+  geom_errorbar(aes(ymin = conf.low,
+                    ymax = conf.high),
+                position = position_dodge(width = 0.8), 
+                width = 0.2 ,size = 0.5) + 
+  labs(
+    x = "Self-Reported Health (sprhealth)",
+    y = "Predicted Marital Happiness",
+    fill = "Gender",
+    title = "Different but the same"
+  ) +
+  theme_bw(base_size = 14) +
+  theme(plot.title = element_text(size = 20, 
+                                  face = "bold"))
+```
+:::
+
+## Combine plots
+
+-   ::: {style="font-size: 50%"}
+    see <https://patchwork.data-imaginist.com/index.html>
+
+    -   `p1 = ggplot(...); p2 = ggplot(...); p3 = ggplot(...)`
+    -   `install.packages("patchwork")`
+    -   `library(patchwork)`
+    -   `p1 + p2 + p3 + plot_layout(ncol = 2)+ plot_annotation(title = "i'm a combined title") &   theme(text = element_text(size = 15))`
+    :::
+
+```{r}
+#install.packages("patchwork")
+library(patchwork)
+p1 <- ggplot(pred, aes(x = health, y = predicted, 
+                 fill = gender, group = gender)) +
+  geom_col(position = "dodge") +  
+  geom_errorbar(aes(ymin = conf.low,
+                    ymax = conf.high),
+                position = position_dodge(width = 0.8), 
+                width = 0.2 ,size = 0.5) + 
+  labs(
+    x = "Self-Reported Health (sprhealth)",
+    y = "Predicted Marital Happiness",
+    fill = "Gender",
+    title = "P1"
+  ) +
+  theme_bw() +
+  theme(plot.title = element_text(size = 15))
+
+p2 <- ggplot(pred, aes(x = health, y = predicted, 
+                 color = gender, group = gender)) +
+  geom_line(size = 0.7) +  
+  geom_line(aes(y = conf.low), 
+            linetype = "dashed", #outside of aes
+            size = 0.7, alpha = 0.7,
+            show.legend = F) +  
+  geom_line(aes(y = conf.high), 
+            linetype = "dashed",
+            size = 0.7, alpha = 0.7,
+            show.legend = F) +  
+  labs(
+    x = "Self-Reported Health (sprhealth)",
+    y = "Predicted Marital Happiness",
+    color = "Gender",
+    title = "P2"
+  ) +
+  theme_bw() +
+  theme(plot.title = element_text(size = 15))
+
+p3 <-    ggplot(jh2, aes(x = rhealth, y = marhappy)) +
+      geom_line(stat = "summary", fun = mean, group = 1, 
+                color = "gray20",linetype = 2,linewidth = 1) +
+      geom_errorbar(stat = "summary", fun.data = mean_se, width = 0.2, 
+                    aes(color = rhealth), #why "aes" here?
+                    size = 0.2,linewidth = 0.7,alpha = 0.7) +  
+      labs(color = "Self-Rated Health") + #notice "fill" to "color"
+      ylab("Marital happiness") + 
+      xlab(NULL) + 
+      ggtitle("P3") + 
+      theme_minimal() +
+      theme(plot.title = element_text(size = 15))
+
+p1 + p2 + p3 + plot_layout(ncol = 2)+ plot_annotation(title = "i'm a combined title") &
+  theme(text = element_text(size = 15)) 
+```
+
+## Facet plots
+
+::: {.column width="30%" style="font-size: 80%"}
+```{r}
+#| echo: true
+#| code-line-numbers: "7,12"
+#| eval: false
+ggplot(jh2, aes(x = rhealth, y = marhappy)) +
+   geom_bar(stat = "summary", fun = mean, 
+            aes(fill = rhealth)) +  
+   geom_errorbar(stat = "summary", 
+                 fun.data = mean_cl_boot, 
+                 width = 0.2) + 
+  facet_wrap( ~ raceth) +
+  labs(
+    x = "Self-rated health",
+    y = "Mean marital happiness",
+    title = "Faceted graph",
+    fill = "Race-ethnicity"
+  ) +
+  theme_bw(base_size = 14)
+```
+:::
+
+::: {.column width="30%" style="font-size: 80%"}
+```{r, eval=TRUE, echo=FALSE}
+ggplot(jh2, aes(x = rhealth, y = marhappy)) +
+   geom_bar(stat = "summary", fun = mean, 
+            aes(fill = rhealth)) +  # Mean as points
+   geom_errorbar(stat = "summary", 
+                 fun.data = mean_cl_boot, 
+                 width = 0.2) + 
+  facet_wrap( ~ raceth) +
+  labs(
+    x = "Self-rated health",
+    y = "Mean marital happiness",
+    title = "Faceted graph",
+    fill = "Race-ethnicity"
+  ) +
+  theme_bw(base_size = 14)
+```
+:::
+
+## Best resources for learning R
+
+-   *R for Data Science*
+
+    -   <https://r4ds.had.co.nz/>
+
+    -   By Hadley Wickham, creator of `tidyverse` and `ggplot2`
+
+    -   Both edition1 and 2 are great and freely available online with paste-friendly code chunks
+
+-   Tidyverse website
+
+    -   <https://www.tidyverse.org/packages/>
+
+-   Online `ggplot2` workshop
+
+    -   <https://www.youtube.com/watch?v=h29g21z0a68&t=2s>
+
+-   Revealjs slides like this one
+
+    -   <https://quarto.org/docs/presentations/revealjs/>
+
+-   *R in Action*
+
+    -   Classic; focus on base R
+
+    -   <https://www.manning.com/books/r-in-action>
