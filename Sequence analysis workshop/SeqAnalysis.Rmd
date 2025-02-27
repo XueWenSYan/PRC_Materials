@@ -1,0 +1,360 @@
+---
+title: "Social Sequence Analysis"
+output: html_document
+author: Xuewen Yan
+date: "2025-02-26"
+editor_options: 
+  chunk_output_type: console
+---
+
+This file draws extensively on Emanuela Struffolino and Anette Fasang's workshop on sequence analysis  https://pdhp.isr.umich.edu/workshops/sequence-analysis-for-social-science/
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data preparation
+
+### Install and load packages
+```{r , echo=TRUE, eval=FALSE}
+# Uncomment to install
+
+# install.packages("tidyverse")       
+# install.packages("haven")            
+# install.packages("TraMineR")         
+# install.packages("TraMineRextras")   
+# install.packages("WeightedCluster")
+
+library("tidyverse")       ### most important packages from the tidyverse
+library("haven")            ### read data stored in various formats
+library("TraMineR")         ### "Life Trajectory Miner for R (and was inspired by the authors' taste for Gewürztraminer wine)."
+library("TraMineRextras")   ### TraMineR Extensions
+library(WeightedCluster)
+```
+
+```{r echo=FALSE,eval=TRUE}
+suppressPackageStartupMessages(library("tidyverse"))       ### most important packages from the tidyverse
+suppressPackageStartupMessages(library("haven"))            ### read data stored in various formats
+suppressPackageStartupMessages(library("TraMineR"))         ### "Life Trajectory Miner for R (and was inspired by the authors' taste for Gewürztraminer wine)."
+suppressPackageStartupMessages(library("TraMineRextras"))   ### TraMineR Extensions
+suppressPackageStartupMessages(library(WeightedCluster))
+```
+
+### Import dta & label factors
+```{r }
+family <- read_dta(paste0(getwd(),"/","PartnerBirthbio.dta"))
+names(family) %>% tail() # tail(names(family))
+
+family <- as_factor(family,only_labelled = T) 
+longlab <- levels(family$state1)
+
+shortlab <- c("S", "Sc", "LAT", "LATc",
+                     "COH", "COHc",
+                     "MAR", "MARc1", "MARc2+")
+
+# levels(family$state1) <- shortlab
+family <- family %>% 
+  mutate(across(starts_with("state"), ~ factor(.x, levels = levels(.x), labels = shortlab)))
+
+```
+
+## Seq object creation
+
+```{r}
+a <- which(names(family) == "state1");a
+names(family) %>% tail()
+b <- which(names(family) == "state264");b
+
+family_month_seq <- seqdef(family[a:b],
+                           alphabet = levels(family$state1),
+                           states = shortlab,
+                           labels = longlab,
+                           # cpal = colspace1, 
+                           weights = family$weight40, # use weights
+                           xtstep = 24) # specifies interval of tick-marks
+help(seqdef)
+
+
+# Optional: change granularity --> years instead of months (using modal values)
+
+family_year_seq <- seqgranularity(family_month_seq,
+                                  tspan=12, 
+                                  method="mostfreq")
+
+# Optional: Spell long-form convertion
+family_spell <- seqformat(family[a:b], from = "STS", to = "SPELL")
+family_sts <- seqformat(family_spell, from = "SPELL", to = "STS",
+  id = "id", begin = "begin", end = "end", status = "states",
+  process = TRUE, limit = b) #set limit to the largest row number by id
+```
+
+## Seq descriptives
+
+### Summary stats
+```{r }
+# variance and sd of the total time spent in the states, and se of the mean
+seqmeant(family_month_seq)
+seqmeant(family_month_seq, serr = TRUE)
+
+# same calculation, by gender & export 
+family$sex %>% levels()
+t1 <- seqmeant(family_month_seq[family$sex == "Male",])
+t2 <- seqmeant(family_month_seq[family$sex == "Female",])
+ob1 <- data.frame(t1,t2)
+write.csv(ob1,file = paste0(getwd(),"/","mytb.csv"))
+
+# proportions of time spent in each state
+seqmeant(family_month_seq, prop = TRUE)
+
+# sequence of distinct successive states = number of episodes
+seqmeant(seqdss(family_month_seq),serr = TRUE)
+
+# Number of transitions for each participant
+family$n_trans <- seqtransn(family_month_seq); head(family$n_trans,5)
+mean(family$n_trans)
+
+# Total time in each state for each participant
+tp <- seqistatd(family_month_seq) #returns a matrix col = each state; row = individual; cell = # of time points in each state
+family <- tibble(family,as_tibble(tp))
+```
+
+### Transition matrix (omitted, explore yourself)
+```{r }
+# ... using yearly sequence data 
+transmat_year <- seqtrate(family_year_seq)
+round(transmat_year,2)
+
+
+# ... using yearly sequence data converted to DSS format (spell perspective)
+transmat_dss <- seqtrate(seqdss(family_year_seq))
+round(transmat_dss,2)
+
+```
+
+### Modal sequence summary & visuals
+```{r }
+tp <- seqmodst(family_year_seq);tp # again, can do similar tricks for groups
+print(tp, format = "SPS")
+
+# visualize modal sequence
+seqmsplot(family_year_seq, 
+          group = family$sex, 
+          border=NA,
+          ylab = "Relative frequency",
+          xtlab = seq(18,44),
+          # xtstep = 2, 
+          xlab = "Age",
+          main = NULL)
+# locator(1)
+rect(xleft = -2, ybottom = 1.2, xright = max(seq_len(ncol(family_year_seq))), ytop = 1, 
+     col = "white", border = NA)
+mtext("Male", side = 3, line = -1, adj = 0.1, cex = 1.2)
+mtext("Female", side = 3, line = -1, adj = 0.7, cex = 1.2)
+```
+
+
+## Seq descriptive plots
+
+### State distribution plot
+```{r }
+# Plotting the general distribution of states in the population
+seqdplot(family_year_seq, 
+         main = "Yearly Granularity",
+         # group = family$sex,
+         border = NA,
+         xlab = "Age",
+         xtlab = seq(18,44,by = 1))
+```
+
+###  Index plot
+```{r}
+# plotting individual sequences, only feasible for a limited number of cases)
+seqIplot(family_year_seq, 
+         # group = family$sex,
+         main = "Yearly Granularity",
+         border = NA)
+```
+
+### Weighted index plot
+```{r }
+# plotting weighted individual sequences, selects a subset of sequences proportionally based on state frequencies )
+seqiplot(family_year_seq, 
+         group = family$sex,
+         main = "Yearly Granularity",
+         border = NA)
+```
+
+```{r Relative frequency index plot (omitted, explore yourself) }
+# Relative freq index plot balances the summary structure of state distribution plotting and index plotting by calculating some representative sequences and then individually plotting them. (Fasang & Liao 2014) Essentially, only the medoid sequences are plotted. A medoid sequence is a sequence that has minimal dissimilarity from other sequences that are classified in the same cluster. This quietly conducts some clustering analysis.
+
+? seqdist
+family_year_om <- seqdist(family_year_seq, 
+                          method="OM", sm= "CONSTANT")
+
+seqplot.rf(family_year_seq,
+           diss=family_year_om,
+           k=30)
+```
+
+## Seq comparison and clustering
+
+sm: substiution cost matrix, "CONSTANT" assigns a constant value of any transitions between states; "TRATE" does data driven measure where less common transitions are more expensive. indel by default =  "auto" = max(sm)/2;
+
+### Optimal matching
+```{r}
+family_year_om <- seqdist(family_year_seq, 
+                          method="OM", sm= "CONSTANT", 
+                          indel = "auto") 
+
+# much higher indel costs
+om_highcost <-seqdist(family_year_seq, 
+              method = "OM", 
+              indel = 4, 
+              sm = "CONSTANT",
+              norm = "auto")
+
+# manually specifying sm based on theory: (omitted, explore yourself)
+   # substitution=1 is one if different number of children but same partnership status 
+   # substitution=2 any substitution of different partnership statuses
+summary(family_year_seq)
+theo <- matrix(
+  c(0,1,2,2,2,2,2,2,2,
+    1,0,2,2,2,2,2,2,2,
+    2,2,0,1,2,2,2,2,2,
+    2,2,1,0,2,2,2,2,2,
+    2,2,2,2,0,1,2,2,2,
+    2,2,2,2,1,0,2,2,2,
+    2,2,2,2,2,2,0,1,1,
+    2,2,2,2,2,2,1,0,1,
+    2,2,2,2,2,2,1,1,0),
+  nrow = 9, ncol = 9, byrow = TRUE)
+
+om_theo<-seqdist(family_year_seq, 
+                 method = "OM", 
+                 indel = 1,
+                 sm = theo,
+                 norm = "auto")
+
+# Should compare clustering results based on different cost specification strategies
+
+```
+
+### Hierarchical clustering
+```{r }
+# We use ward distance that minimizes residual variance. 
+# The goal of clustering is to group similar sequences together while making sure that sequences in different clusters are as dissimilar as possible. 
+class(family_year_om)
+class(as.dist(family_year_om))
+
+fam.ward1 <- hclust(as.dist(family_year_om), 
+                    method = "ward.D", 
+                    members = family$weight40)
+class(fam.ward1)
+plot(fam.ward1)
+
+```
+
+### Evaluate clustering quality
+AWS: average silhouette width; average coherence of the assigned sequences across the clusters, larger = better
+```{r }
+fam.ward.test <- as.clustrange(fam.ward1, 
+                               diss = family_year_om,
+                               weights =family$weight40, 
+                               ncluster = 10) 
+
+
+fam.ward.test
+```
+
+###  Extract clustering solutions
+```{r}
+family$cl5 <-cutree(fam.ward1 , k = 5)
+family$cl4 <-cutree(fam.ward1, k = 4)
+
+# Compare 4- and 5-cluster solutions
+table(family$cl5, family$cl4)
+```
+
+### Visualize sequence clusters 
+```{r}
+seqdplot(family_year_seq, 
+         group = family$cl4, 
+         border = NA)
+
+seqdplot(family_year_seq, 
+         group = family$cl4, 
+         border = FALSE)
+
+seqdplot(family_year_seq, 
+         group = family$cl5, 
+         border = FALSE)
+
+seqiplot(family_year_seq, 
+         group = family$cl4, 
+         border = FALSE)
+
+seqiplot(family_year_seq, 
+         group = family$cl5, 
+         border = NA)
+
+seqIplot(family_year_seq, 
+         group = family$cl4, 
+         border = NA)
+
+seqplot.rf(family_year_seq,
+           group = family$cl5,
+           diss=family_year_om,
+           k = 30,
+           border = NA)
+```
+
+## Regression analysis
+```{r}
+# We already have the clustering groups stored! We also created several variables: n_trans; and the # of time points in a state for each state 
+getwd()
+family$MARc2orplus<- family$`MARc2+` # name MARc2+ is illegal for write_dta
+family$`MARc2+` <- NULL #delete a column
+write_dta(family, path = paste0(getwd(),"/","family_cl.dta"))
+```
+
+## Colors!
+```{r}
+# install.packages("RColorBrewer")
+# install.packages("colorspace")
+
+library(RColorBrewer)
+library(colorspace)
+# Inspect predefined color palettes
+
+display.brewer.pal(3, "Blues")
+display.brewer.pal(7, "Blues")
+
+# Choosing colors
+
+col1 <- brewer.pal(3, "Blues")[2:3]   # takes the 2nd to 3rd types of brewer blue to color 1 (eventually use this for Single states)
+col2 <- brewer.pal(3, "Greens")[2:3]  # LAT states
+col3 <- brewer.pal(3, "Oranges")[2:3] # Cohabitation states
+col4 <- brewer.pal(7, "Purples")[5:7] # Marriage states
+
+# Define complete color palette
+
+colspace1 <- c(col1, col2, col3, col4) # can specify color pallette option in seqdef!
+
+# Inspect color palette
+
+swatchplot(colspace1)
+```
+
+
+```{r echo=TRUE,eval=FALSE}
+# seq def again with self-defined coloring
+family_month_seq <- seqdef(family[a:b],
+                           alphabet = levels(family$state1),
+                           states = shortlab,
+                           labels = longlab,
+                           cpal = colspace1, 
+                           weights = family$weight40, # use weights
+                           xtstep = 24) # specifies interval of tick-marks
+
+```
+
