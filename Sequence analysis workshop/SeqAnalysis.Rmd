@@ -42,7 +42,7 @@ suppressPackageStartupMessages(library(WeightedCluster))
 
 ### Import dta & label factors
 ```{r }
-family <- read_dta(paste0(getwd(),"/","PartnerBirthbio.dta"))
+family <- read_dta("PartnerBirthbio.dta") # make sure the dta file is in the same folder/directory as the R code
 names(family) %>% tail() # tail(names(family))
 
 family <- as_factor(family,only_labelled = T) 
@@ -93,29 +93,42 @@ family_sts <- seqformat(family_spell, from = "SPELL", to = "STS",
 ### Summary stats
 ```{r }
 # variance and sd of the total time spent in the states, and se of the mean
-seqmeant(family_month_seq)
 seqmeant(family_month_seq, serr = TRUE)
 
 # same calculation, by gender & export 
 family$sex %>% levels()
 t1 <- seqmeant(family_month_seq[family$sex == "Male",])
 t2 <- seqmeant(family_month_seq[family$sex == "Female",])
-ob1 <- data.frame(t1,t2)
-write.csv(ob1,file = paste0(getwd(),"/","mytb.csv"))
+ob1 <- data.frame(t1,t2);
+ob1
+write.csv(ob1,file = "mytb.csv")
 
-# proportions of time spent in each state
+# proportions of time spent in each state for the sample
 seqmeant(family_month_seq, prop = TRUE)
 
-# sequence of distinct successive states = number of episodes
+# average number of episodes/spells (stability) for the sample
 seqmeant(seqdss(family_month_seq),serr = TRUE)
+```
 
+### Individual-level stats
+```{r}
 # Number of transitions for each participant
 family$n_trans <- seqtransn(family_month_seq); head(family$n_trans,5)
 mean(family$n_trans)
 
 # Total time in each state for each participant
-tp <- seqistatd(family_month_seq) #returns a matrix col = each state; row = individual; cell = # of time points in each state
-family <- tibble(family,as_tibble(tp))
+time_in_state <- seqistatd(family_month_seq) %>% as_tibble() #returns a matrix col = each state; row = individual; cell = # of time points in each state; as_tibble converts this to df
+names(time_in_state) <- paste0("dur_",names(time_in_state))
+head(time_in_state)
+family <- tibble(family,as_tibble(time_in_state))
+
+# Number of episodes/spells in each state for each participant
+n_spells <- seqistatd(seqdss(family_month_seq)) %>% as_tibble()
+names(n_spells) <- paste0("nspell_",names(n_spells))
+family <- tibble(family, as_tibble(n_spells))
+
+# check data
+names(family) %>% tail(20)
 ```
 
 ### Transition matrix (omitted, explore yourself)
@@ -300,21 +313,18 @@ seqiplot(family_year_seq,
 seqIplot(family_year_seq, 
          group = family$cl4, 
          border = NA)
-
-seqplot.rf(family_year_seq,
-           group = family$cl5,
-           diss=family_year_om,
-           k = 30,
-           border = NA)
 ```
 
 ## Regression analysis
 ```{r}
 # We already have the clustering groups stored! We also created several variables: n_trans; and the # of time points in a state for each state 
 getwd()
-family$MARc2orplus<- family$`MARc2+` # name MARc2+ is illegal for write_dta
-family$`MARc2+` <- NULL #delete a column
-write_dta(family, path = paste0(getwd(),"/","family_cl.dta"))
+family$dur_MARc2orplus<- family$`dur_MARc2+` # name MARc2+ is illegal for write_dta
+family$nspell_MARc2orplus<- family$`nspell_MARc2+` # name MARc2+ is illegal for write_dta
+family$`dur_MARc2+` <- NULL #delete a column
+family$`nspell_MARc2+` <- NULL #delete a column
+
+write_dta(family, path = "family_cl.dta") 
 ```
 
 ## Colors!
@@ -346,15 +356,24 @@ swatchplot(colspace1)
 ```
 
 
-```{r echo=TRUE,eval=FALSE}
+```{r echo=TRUE,eval=TRUE}
 # seq def again with self-defined coloring
-family_month_seq <- seqdef(family[a:b],
+family_month_seq2 <- seqdef(family[a:b],
                            alphabet = levels(family$state1),
                            states = shortlab,
                            labels = longlab,
                            cpal = colspace1, 
                            weights = family$weight40, # use weights
                            xtstep = 24) # specifies interval of tick-marks
+family_year_seq2 <- seqgranularity(family_month_seq2,
+                                  tspan=12, 
+                                  method="mostfreq")
 
+seqiplot(family_year_seq2,
+         group = family$sex,
+         border = NA,
+         #ylab = "Weighted frequencies",
+         xtlab = seq(18,44),
+         xlab = "Age")
 ```
 
